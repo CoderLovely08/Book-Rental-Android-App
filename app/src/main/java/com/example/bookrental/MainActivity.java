@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+//        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
         File file = new File(getFilesDir(), "book_info.txt");
 
         FileInputStream inputStream;

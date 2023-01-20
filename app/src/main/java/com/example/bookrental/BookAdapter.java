@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -51,10 +53,12 @@ public class BookAdapter extends BaseAdapter {
         TextView bookPrice = view.findViewById(R.id.bookPrice);
 
         Uri imguri = Uri.parse(bookList.get(i).getImage());
+        System.out.println(imguri);
         String title = bookList.get(i).getTitle();
         String price = bookList.get(i).getRentPerWeek();
 
-        bookImge.setImageURI(imguri);
+        Glide.with(context).load(imguri).into(bookImge);
+
         bookTitle.setText(title);
         bookPrice.setText("₹"+price+"/week");
 

@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 public class BookDetailsActivity extends AppCompatActivity {
 
 
@@ -43,7 +45,9 @@ public class BookDetailsActivity extends AppCompatActivity {
         String authorAddress = book.getAddress();
 
         // Set the book information to the views
-        imageView.setImageURI(Uri.parse(book.getImage()));
+//        imageView.setImageURI(Uri.parse(book.getImage()));
+        System.out.println(book.getImage());
+        Glide.with(this).load(Uri.parse(book.getImage())).into(imageView);
         titleTextView.setText(bookTitle);
         rentTextView.setText(bookRent);
         informationTextView.setText(bookInfo);
