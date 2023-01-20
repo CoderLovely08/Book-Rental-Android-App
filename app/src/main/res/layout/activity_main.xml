@@ -48,6 +48,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
                 android:hint="Filter by Category" />
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
             <RadioGroup
                 android:id="@+id/category_radio_group"
                 android:layout_width="match_parent"
@@ -89,7 +92,7 @@
                     android:text="ITI" />
 
             </RadioGroup>
-
+            </HorizontalScrollView>
         </LinearLayout>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
