@@ -84,18 +84,19 @@ public class SignupActivity extends AppCompatActivity {
         String password = mPasswordField.getText().toString();
         String confirmPassword = mConfirmPasswordField.getText().toString();
 
-        if (name.isEmpty()) {
-            Toast.makeText(this, "Name field is required", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || name.length()<5 ) {
+            Toast.makeText(this, "Invalid name input", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (email.isEmpty()) {
-            Toast.makeText(this, "Email field is required", Toast.LENGTH_SHORT).show();
+        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+        if (!email.matches(emailRegex)) {
+            Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (password.isEmpty()) {
-            Toast.makeText(this, "Password field is required", Toast.LENGTH_SHORT).show();
+        if (password.isEmpty() || password.length()<8) {
+            Toast.makeText(this, "Password must contain at least 8 characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -104,14 +105,18 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        File file = new File(getFilesDir(), "signup_info.txt");
-        try (FileOutputStream fos = new FileOutputStream(file, true)) {
-            String info = "Name: " + name + "\nEmail: " + email + "\nPassword: " + password + "\n\n";
-            fos.write(info.getBytes());
-            Toast.makeText(this, "Signup successful", Toast.LENGTH_SHORT).show();
-            redirectLogin();
-        } catch (IOException e) {
-            Toast.makeText(this, "Error saving signup info", Toast.LENGTH_SHORT).show();
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+
+        try {
+            User user = new User(-1,name,email,password,null,null);
+            boolean success = dataBaseHelper.addUser(user);
+            if(success) {
+                Toast.makeText(this, "Signup successful", Toast.LENGTH_SHORT).show();
+                redirectLogin();
+            }
+            else Toast.makeText(this, "Email already exists", Toast.LENGTH_SHORT).show();
+        } catch (Exception e){
+            Toast.makeText(this, "Error, Please try again!", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 // Do something with the selected category
                 // for example filterBooksByCategory(selectedCategory)
 
-                List<Book> book = readBookFileInfo();
+                List<Book> book = readBookDataBase();
                 filterBooksByCategory(selectedCategory,book);
             }
         });
@@ -100,35 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // to make the Navigation drawer icon always appear on the action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-        File file = new File(getFilesDir(), "book_info.txt");
-
-        FileInputStream inputStream;
-        try {
-            inputStream = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-
-            String imageUri = null;
-            String title = null;
-            String rent = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("Image Uri: ")) {
-                    imageUri = line.substring("Image Uri: ".length());
-                } else if (line.startsWith("Title: ")) {
-                    title = line.substring("Title: ".length());
-                } else if (line.startsWith("Rent: ")) {
-                    rent = line.substring("Rent: ".length());
-                    bookList.add(new Book(imageUri, title, rent));
-                    imageUri = null;
-                    title = null;
-                    rent = null;
-                }
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        bookList = readBookDataBase();
 
         bookAdapter = new BookAdapter(this, bookList);
         listView = findViewById(R.id.list_view);
@@ -138,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Get the clicked book object
-                ArrayList<Book> books = readBookFileInfo();
+                List<Book> books = readBookDataBase();
                 Book clickedBook = books.get(position);
                 System.out.println(clickedBook.getImage());
                 // Create an intent to open the BookDetailsActivity
@@ -216,60 +189,6 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public ArrayList<Book> readBookFileInfo(){
-        ArrayList<Book> bookList = new ArrayList<>();
-
-        File file = new File(getFilesDir(), "book_info.txt");
-
-        FileInputStream inputStream;
-        try {
-            inputStream = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-
-            String imageUri = null;
-            String title = null;
-            String rent = null;
-            String information = null;
-            String username = null;
-            String phone = null;
-            String address = null;
-            String category =null;
-            while ((line = reader.readLine()) != null) {
-                if(line.startsWith("Category: ")){
-                      category = line.substring("Category: ".length());
-                } else if (line.startsWith("Image Uri: ")) {
-                    imageUri = line.substring("Image Uri: ".length());
-                } else if (line.startsWith("Title: ")) {
-                    title = line.substring("Title: ".length());
-                } else if (line.startsWith("Rent: ")) {
-                    rent = line.substring("Rent: ".length());
-                } else if(line.startsWith("Information: ")){
-                    information = line.substring("Information: ".length());
-                }else if(line.startsWith("Username: ")){
-                    username = line.substring("Username: ".length());
-                }else if(line.startsWith("Phone: ")){
-                    phone = line.substring("Phone: ".length());
-                }else if(line.startsWith("Address: ")){
-                    address = line.substring("Address: ".length());
-                    bookList.add(new Book(title, information, rent, imageUri, username, phone, category, address));
-                    imageUri = null;
-                    title = null;
-                    rent = null;
-                    information = null;
-                    username = null;
-                    phone = null;
-                    category = null;
-                    address = null;
-                }
-            }
-            inputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return bookList;
-    }
 
     List<Book> currentBookList;
     private void filterBooksByCategory(String category, List<Book> bookList) {
@@ -331,5 +250,8 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-
+    public List<Book> readBookDataBase(){
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        return dataBaseHelper.getAllBooks();
+    }
 }

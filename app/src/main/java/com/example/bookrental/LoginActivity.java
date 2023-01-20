@@ -54,7 +54,23 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "Password field is required", Toast.LENGTH_SHORT).show();
             return;
         }
+        
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        User user = dataBaseHelper.getUser(email,password);
+        System.out.println(user);
+        if(user!=null){
+            Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+            // Save login information in SharedPreferences
+            SharedPreferences.Editor editor = getSharedPreferences("loginPreference", Context.MODE_PRIVATE).edit();
+            editor.putBoolean("is_logged_in", true);
+            editor.putString("username",user.getName());
+            editor.putString("userEmail",user.getEmail());
+            editor.apply();
+            redirectHome();
+        }else Toast.makeText(this, "Incorrect credentials!", Toast.LENGTH_SHORT).show();
 
+//        --------------------------------------------------------------------
+        /*
         File file = new File(getFilesDir(), "signup_info.txt");
         if (!file.exists()) {
             Toast.makeText(this, "Signup information not found", Toast.LENGTH_SHORT).show();
@@ -94,5 +110,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (IOException e) {
             Toast.makeText(this, "Error reading signup info", Toast.LENGTH_SHORT).show();
         }
+
+         */
     }
 }

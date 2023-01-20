@@ -178,20 +178,6 @@
                     android:text="Add Book"
                     android:onClick="saveData"
                     />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_gravity="center"
-                android:text="View Book"
-                android:onClick="viewData"
-                />
-
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/avatars" />
 
         </LinearLayout>
 

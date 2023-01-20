@@ -1,6 +1,8 @@
 package com.example.bookrental;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -11,6 +13,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,9 +25,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class UserProfile extends AppCompatActivity {
+
+    List<Book> bookList = new ArrayList<>();
+    ListView listView;
+    BookUserAdapter bookAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,46 +48,33 @@ public class UserProfile extends AppCompatActivity {
             nameTextView.setText(user.getName());
             TextView emailTextView = findViewById(R.id.textEmail);
             emailTextView.setText(user.getEmail());
+            TextView phoneTextView = findViewById(R.id.textPhone);
+            phoneTextView.setText(user.getPhone());
+            TextView addressTextView = findViewById(R.id.textAddress);
+            addressTextView.setText(user.getAddress());
 
         } else {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
         }
 
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        bookList = dataBaseHelper.getBooksByEmail(user.getName());
+
+        bookAdapter = new BookUserAdapter(this, bookList);
+        listView = findViewById(R.id.list_view);
+        listView.setAdapter(bookAdapter);
     }
 
     private User readUserFromTextFile() {
-        User user = new User();
-        File file = new File(getFilesDir(), "signup_info.txt");
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-            String line;
-            String userData[] = getEmailFromSharedPreferences();
-            String loggedInEmail = userData[0];
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("Name: ")) {
-                    user.setName(line.substring(6));
-                } else if (line.startsWith("Email: ")) {
-                    String email = line.substring(7);
-                    if (email.equals(loggedInEmail)) {
-                        user.setEmail(email);
-                        user.setPhone(userData[1]);
-                        user.setAddress(userData[2]);
-                        break;
-                    }
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return user;
+
+        SharedPreferences sharedPreferences = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
+        String name = sharedPreferences.getString("username", "");
+        String email = sharedPreferences.getString("userEmail", "");
+        String phone = sharedPreferences.getString("userPhone","-----");
+        String address = sharedPreferences.getString("userAddress", "-----");
+        return new User(-1, name, email,null, phone, address);
     }
 
-    private String[] getEmailFromSharedPreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences("loginPreference", MODE_PRIVATE);
-        String result[]={sharedPreferences.getString("userEmail", ""),sharedPreferences.getString("userPhone", ""),sharedPreferences.getString("userAddress", "")};
-        System.out.println(Arrays.toString(result));
-        return result;
-    }
 
     public void saveInformation(View view){
         TextInputEditText address,phone;
@@ -85,16 +82,22 @@ public class UserProfile extends AppCompatActivity {
         phone = findViewById(R.id.phone_editText);
         String userAddress = address.getText().toString().trim();
         String userPhone = phone.getText().toString().trim();
-        if(userAddress.length()<10){
-            Toast.makeText(this, "Address Too short", Toast.LENGTH_SHORT).show();
-        }else if(userPhone.length()<10){
+        if(userPhone.length()<10){
             Toast.makeText(this, "Invalid Phone number", Toast.LENGTH_SHORT).show();
+        }else if(userAddress.length()<10){
+            Toast.makeText(this, "Address Too short", Toast.LENGTH_SHORT).show();
         }else {
             SharedPreferences.Editor editor = getSharedPreferences("loginPreference", Context.MODE_PRIVATE).edit();
-            editor.putString("userPhone",userPhone);
-            editor.putString("userAddress",userAddress);
+            editor.putString("userPhone", userPhone);
+            editor.putString("userAddress", userAddress);
             editor.apply();
             Toast.makeText(this, "Profile information saved!", Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(this, UserProfile.class);
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(i);
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -152,6 +155,9 @@ public class UserProfile extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
+    public List<Book> readBookDataBase(){
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(this);
+        return dataBaseHelper.getAllBooks();
+    }
 
 }

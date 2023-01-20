@@ -29,6 +29,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddBookActivity extends AppCompatActivity {
     TextInputEditText titleEditText, rentEditText, informationEditText, usernameEditText, phoneEditText, addressEditText;
@@ -36,7 +38,7 @@ public class AddBookActivity extends AppCompatActivity {
     ImageView imageView;
     private static final int REQUEST_CODE_PICK_IMAGE = 1;
 
-    String imageUri;
+    String imageUri = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +55,12 @@ public class AddBookActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phone_editText);
         addressEditText = findViewById(R.id.address_editText);
         radioGroup = findViewById(R.id.radio_group);
-        imageView = findViewById(R.id.imageView4);
-
 
         SharedPreferences editor = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
         usernameEditText.setText(editor.getString("username",null));
+        usernameEditText.setEnabled(false);
         phoneEditText.setText(editor.getString("userPhone",null));
         addressEditText.setText(editor.getString("userAddress",null));
-
 
     }
 
@@ -80,6 +80,9 @@ public class AddBookActivity extends AppCompatActivity {
     }
 
     public void saveData(View view){
+        Book newBook ;
+        DataBaseHelper dataBaseHelper = new DataBaseHelper(AddBookActivity.this);
+
         int selectedId = radioGroup.getCheckedRadioButtonId();
         RadioButton selectedRadioButton = findViewById(selectedId);
         String selectedCategory = selectedRadioButton.getText().toString();
@@ -91,57 +94,23 @@ public class AddBookActivity extends AppCompatActivity {
         String address = addressEditText.getText().toString();
         String username = usernameEditText.getText().toString();
 
-        if(!validateInputs(title,rent,information,username,phone,address)){
+        if(!validateInputs(title,rent,information,username,phone,address,imageUri)){
             Toast.makeText(this, "Input cannot be empty", Toast.LENGTH_SHORT).show();
         }else {
 
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
-            File file = new File(getFilesDir(), "book_info.txt");
-
-            FileOutputStream outputStream;
-            BufferedWriter writer = null;
             try {
-                outputStream = new FileOutputStream(file, true);
-                writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-                writer.append("Category: " + selectedCategory);
-                writer.newLine();
-                writer.append("Image Uri: " + imageUri);
-                writer.newLine();
-                writer.append("Title: " + title);
-                writer.newLine();
-                writer.append("Rent: " + rent);
-                writer.newLine();
-                writer.append("Information: " + information);
-                writer.newLine();
-                writer.append("Username: " + username);
-                writer.newLine();
-                writer.append("Phone: " + phone);
-                writer.newLine();
-                writer.append("Address: " + address);
-                writer.newLine();
-                writer.flush();
-
+                newBook = new Book(-1,title, rent, information, selectedCategory, username, phone, address, imageUri);
+                boolean success = dataBaseHelper.addBook(newBook);
+                if(success) Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(this, "Unable to add book", Toast.LENGTH_SHORT).show();
+            } catch (Exception e){
+                Toast.makeText(this, "Error creating book!", Toast.LENGTH_SHORT).show();
+            } finally {
                 Intent i = new Intent(AddBookActivity.this, MainActivity.class);
                 startActivity(i);
                 finish();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
-    }
-
-    public void viewData(View view){
-        Intent i = new Intent(AddBookActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
     }
 
     public boolean validateInputs(String ...items){

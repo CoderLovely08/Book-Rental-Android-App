@@ -30,6 +30,18 @@ public class Book implements Serializable {
         this.rentPerWeek = rent;
     }
 
+    public Book(int id, String title, String rentPerWeek, String description, String category, String username, String phone, String address, String imageUri) {
+        this.id = id;
+        this.title = title;
+        this.rentPerWeek= rentPerWeek;
+        this.description = description;
+        this.category = category;
+        this.username = username;
+        this.phone = phone;
+        this.address = address;
+        this.imageUri = imageUri;
+    }
+
     public int getId() {
         return id;
     }

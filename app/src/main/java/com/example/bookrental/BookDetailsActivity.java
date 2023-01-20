@@ -50,14 +50,13 @@ public class BookDetailsActivity extends AppCompatActivity {
         TextView addressTextView = findViewById(R.id.address_text_view);
 
         String bookTitle = book.getTitle();
-        String bookRent = book.getRentPerWeek()+"/week";
+        String bookRent = "₹"+book.getRentPerWeek()+"/week";
         String bookInfo =  book.getDescription();
         String category = "Category: "+book.getCategory();
         String bookAuthor = book.getUsername();
         String authorAddress = book.getAddress();
 
 
-//        System.out.println(book.getImage());
         Bitmap bitmap = BitmapFactory.decodeFile(book.getImage());
         imageView.setImageBitmap(bitmap);
         titleTextView.setText(bookTitle);
