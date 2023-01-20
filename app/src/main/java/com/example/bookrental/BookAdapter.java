@@ -1,6 +1,8 @@
 package com.example.bookrental;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +50,7 @@ public class BookAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflater.inflate(R.layout.list_item, null);
-        ImageView bookImge = view.findViewById(R.id.bookImg);
+        ImageView bookImage = view.findViewById(R.id.bookImg);
         TextView bookTitle = view.findViewById(R.id.bookTitle);
         TextView bookPrice = view.findViewById(R.id.bookPrice);
 
@@ -57,8 +59,8 @@ public class BookAdapter extends BaseAdapter {
         String title = bookList.get(i).getTitle();
         String price = bookList.get(i).getRentPerWeek();
 
-        Glide.with(context).load(imguri).into(bookImge);
-
+        Bitmap bitmap = BitmapFactory.decodeFile(bookList.get(i).getImage());
+        bookImage.setImageBitmap(bitmap);
         bookTitle.setText(title);
         bookPrice.setText("₹"+price+"/week");
 

@@ -1,21 +1,33 @@
 package com.example.bookrental;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+
+import java.io.File;
+import java.io.IOException;
 
 public class BookDetailsActivity extends AppCompatActivity {
 
@@ -44,10 +56,10 @@ public class BookDetailsActivity extends AppCompatActivity {
         String bookAuthor = book.getUsername();
         String authorAddress = book.getAddress();
 
-        // Set the book information to the views
-//        imageView.setImageURI(Uri.parse(book.getImage()));
-        System.out.println(book.getImage());
-        Glide.with(this).load(Uri.parse(book.getImage())).into(imageView);
+
+//        System.out.println(book.getImage());
+        Bitmap bitmap = BitmapFactory.decodeFile(book.getImage());
+        imageView.setImageBitmap(bitmap);
         titleTextView.setText(bookTitle);
         rentTextView.setText(bookRent);
         informationTextView.setText(bookInfo);
@@ -124,5 +136,18 @@ public class BookDetailsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String[] permissions,  int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+            } else {
+                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
 }

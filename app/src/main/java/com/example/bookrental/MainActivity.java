@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Get the clicked book object
                 ArrayList<Book> books = readBookFileInfo();
-                int index = books.indexOf(books);
                 Book clickedBook = books.get(position);
+                System.out.println(clickedBook.getImage());
                 // Create an intent to open the BookDetailsActivity
                 Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
                 // Pass the clicked book object to the BookDetailsActivity using the putExtra() method

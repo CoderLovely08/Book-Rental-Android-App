@@ -7,12 +7,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -28,6 +33,7 @@ import java.io.OutputStreamWriter;
 public class AddBookActivity extends AppCompatActivity {
     TextInputEditText titleEditText, rentEditText, informationEditText, usernameEditText, phoneEditText, addressEditText;
     RadioGroup radioGroup;
+    ImageView imageView;
     private static final int REQUEST_CODE_PICK_IMAGE = 1;
 
     String imageUri;
@@ -47,6 +53,8 @@ public class AddBookActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.phone_editText);
         addressEditText = findViewById(R.id.address_editText);
         radioGroup = findViewById(R.id.radio_group);
+        imageView = findViewById(R.id.imageView4);
+
 
         SharedPreferences editor = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
         usernameEditText.setText(editor.getString("username",null));
@@ -57,7 +65,7 @@ public class AddBookActivity extends AppCompatActivity {
     }
 
     public void selectBookImage(View view){
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
     }
@@ -67,15 +75,11 @@ public class AddBookActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
-            imageUri = data.getData().toString();
-
+            imageUri = getPath(data.getData());
         }
     }
 
     public void saveData(View view){
-
-//        FileOutputStream outputStream;
-
         int selectedId = radioGroup.getCheckedRadioButtonId();
         RadioButton selectedRadioButton = findViewById(selectedId);
         String selectedCategory = selectedRadioButton.getText().toString();
@@ -205,5 +209,14 @@ public class AddBookActivity extends AppCompatActivity {
         finish();
     }
 
-
+    public String getPath(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String s=cursor.getString(column_index);
+        cursor.close();
+        return s;
+    }
 }
