@@ -114,8 +114,6 @@ public class UserProfile extends AppCompatActivity {
             else
                 Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
 
-//            Toast.makeText(this, "Profile information saved!", Toast.LENGTH_SHORT).show();
-
             Intent i = new Intent(this, UserProfile.class);
             finish();
             overridePendingTransition(0, 0);
