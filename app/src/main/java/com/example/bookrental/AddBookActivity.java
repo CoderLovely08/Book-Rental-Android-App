@@ -57,11 +57,22 @@ public class AddBookActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.radio_group);
 
         SharedPreferences editor = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
-        usernameEditText.setText(editor.getString("username",null));
-        usernameEditText.setEnabled(false);
-        phoneEditText.setText(editor.getString("userPhone",null));
-        addressEditText.setText(editor.getString("userAddress",null));
+        String email = editor.getString("userEmail", "");
 
+        DataBaseHelper db = new DataBaseHelper(this);
+        User currentUser = db.getUserByEmail(email);
+
+        usernameEditText.setText(currentUser.getName());
+        usernameEditText.setEnabled(false);
+        phoneEditText.setText(currentUser.getPhone());
+        addressEditText.setText(currentUser.getAddress());
+
+        if(phoneEditText.getText().toString().trim().length()==0 || addressEditText.getText().toString().trim().length()==0){
+            Toast.makeText(this, "Please update your profile before adding a book", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(this,UserProfile.class);
+            startActivity(i);
+            finish();
+        }
     }
 
     public void selectBookImage(View view){
@@ -87,18 +98,20 @@ public class AddBookActivity extends AppCompatActivity {
         RadioButton selectedRadioButton = findViewById(selectedId);
         String selectedCategory = selectedRadioButton.getText().toString();
 
-        String title = titleEditText.getText().toString();
-        String rent = rentEditText.getText().toString();
-        String information = informationEditText.getText().toString();
-        String phone = phoneEditText.getText().toString();
-        String address = addressEditText.getText().toString();
-        String username = usernameEditText.getText().toString();
+        String title = titleEditText.getText().toString().trim();
+        String rent = rentEditText.getText().toString().trim();
+        String information = informationEditText.getText().toString().trim();
+        String phone = phoneEditText.getText().toString().trim();
+        String address = addressEditText.getText().toString().trim();
+        String username = usernameEditText.getText().toString().trim();
 
-        if(!validateInputs(title,rent,information,username,phone,address,imageUri)){
-            Toast.makeText(this, "Input cannot be empty", Toast.LENGTH_SHORT).show();
-        }else {
-
+        if(!validateInputs(title,information,username,phone,address)){
+            Toast.makeText(this, "Input too short or empty", Toast.LENGTH_SHORT).show();
+        } else if (imageUri.trim().length()==0) {
+            Toast.makeText(this, "Please select an image", Toast.LENGTH_SHORT).show();
+        } else {
             try {
+                if(rent.length()==0) rent = "0";
                 newBook = new Book(-1,title, rent, information, selectedCategory, username, phone, address, imageUri);
                 boolean success = dataBaseHelper.addBook(newBook);
                 if(success) Toast.makeText(this, "Added Successfully", Toast.LENGTH_SHORT).show();
@@ -115,7 +128,7 @@ public class AddBookActivity extends AppCompatActivity {
 
     public boolean validateInputs(String ...items){
         for(String i: items){
-            if(i.trim().length()==0) return false;
+            if(i.trim().length()==0 || i.length()<5) return false;
         }
         return true;
     }

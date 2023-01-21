@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -32,8 +33,10 @@ import java.util.List;
 public class UserProfile extends AppCompatActivity {
 
     List<Book> bookList = new ArrayList<>();
+    Button button;
     ListView listView;
     BookUserAdapter bookAdapter;
+    TextInputEditText address,phone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +45,25 @@ public class UserProfile extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        TextView nameTextView = findViewById(R.id.textName);
+        TextView emailTextView = findViewById(R.id.textEmail);
+        address =findViewById(R.id.address_editText);
+        phone = findViewById(R.id.phone_editText);
+
+        button = findViewById(R.id.button);
+        button.setEnabled(false);
         User user = readUserFromTextFile();
         if (user != null) {
-            TextView nameTextView = findViewById(R.id.textName);
+
             nameTextView.setText(user.getName());
-            TextView emailTextView = findViewById(R.id.textEmail);
             emailTextView.setText(user.getEmail());
-            TextView phoneTextView = findViewById(R.id.textPhone);
-            phoneTextView.setText(user.getPhone());
-            TextView addressTextView = findViewById(R.id.textAddress);
-            addressTextView.setText(user.getAddress());
+            DataBaseHelper db = new DataBaseHelper(this);
+            User currentUser = db.getUserByEmail(user.getEmail());
+
+            address.setText(currentUser.getAddress());
+            phone.setText(currentUser.getPhone());
+            address.setEnabled(false);
+            phone.setEnabled(false);
 
         } else {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
@@ -70,8 +82,8 @@ public class UserProfile extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
         String name = sharedPreferences.getString("username", "");
         String email = sharedPreferences.getString("userEmail", "");
-        String phone = sharedPreferences.getString("userPhone","-----");
-        String address = sharedPreferences.getString("userAddress", "-----");
+        String phone = sharedPreferences.getString("userPhone","");
+        String address = sharedPreferences.getString("userAddress", "");
         return new User(-1, name, email,null, phone, address);
     }
 
@@ -91,7 +103,18 @@ public class UserProfile extends AppCompatActivity {
             editor.putString("userPhone", userPhone);
             editor.putString("userAddress", userAddress);
             editor.apply();
-            Toast.makeText(this, "Profile information saved!", Toast.LENGTH_SHORT).show();
+
+            SharedPreferences sharedPreferences = getSharedPreferences("loginPreference", Context.MODE_PRIVATE);
+            String email = sharedPreferences.getString("userEmail", "");
+
+            DataBaseHelper db =new DataBaseHelper(this);
+
+            if(db.updateUser(email,userPhone,userAddress))
+                Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
+
+//            Toast.makeText(this, "Profile information saved!", Toast.LENGTH_SHORT).show();
 
             Intent i = new Intent(this, UserProfile.class);
             finish();
@@ -99,6 +122,16 @@ public class UserProfile extends AppCompatActivity {
             startActivity(i);
             overridePendingTransition(0, 0);
         }
+    }
+
+    public void editInformation(View view){
+        Button editButton = findViewById(R.id.buttonEdit);
+        editButton.setEnabled(false);
+        button.setEnabled(true);
+        phone.setText("");
+        phone.setEnabled(true);
+        address.setText("");
+        address.setEnabled(true);
     }
 
 

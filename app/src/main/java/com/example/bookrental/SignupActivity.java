@@ -79,10 +79,10 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupClicked(View view) {
-        String name = mNameField.getText().toString();
-        String email = mEmailField.getText().toString();
-        String password = mPasswordField.getText().toString();
-        String confirmPassword = mConfirmPasswordField.getText().toString();
+        String name = mNameField.getText().toString().trim();
+        String email = mEmailField.getText().toString().trim();
+        String password = mPasswordField.getText().toString().trim();
+        String confirmPassword = mConfirmPasswordField.getText().toString().trim();
 
         if (name.isEmpty() || name.length()<5 ) {
             Toast.makeText(this, "Invalid name input", Toast.LENGTH_SHORT).show();
@@ -147,6 +147,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onPayClicked(View view){
+        Button payButton = findViewById(R.id.payButton);
         AlertDialog.Builder builder = new AlertDialog.Builder(SignupActivity.this);
         builder.setMessage("This is just a testing app so you're not really required to pay any registration fees. Enjoy!!");
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -154,6 +155,7 @@ public class SignupActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 Toast.makeText(SignupActivity.this,"Payment Successful",Toast.LENGTH_SHORT).show();
                 singupButton.setEnabled(true);
+                payButton.setEnabled(false);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

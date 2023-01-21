@@ -195,4 +195,30 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         else return false;
     }
 
+
+    public boolean updateUser(String email, String phone, String address) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_USER_PHONE, phone);
+        cv.put(COLUMN_USER_ADDRESS, address);
+
+        int result = db.update(USER_TABLE, cv, COLUMN_USER_EMAIL + " = ?", new String[] {email});
+        return result > 0;
+    }
+
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(USER_TABLE, null, COLUMN_USER_EMAIL + " = ?", new String[]{email}, null, null, null);
+        User user = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(0);
+            String name = cursor.getString(1);
+            String phone = cursor.getString(4);
+            String address = cursor.getString(5);
+            user = new User(id, name, email, null, phone, address);
+        }
+        cursor.close();
+        return user;
+    }
+
 }
