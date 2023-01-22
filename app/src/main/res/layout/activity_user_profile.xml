@@ -152,12 +152,20 @@
             android:layout_margin="12dp"
             android:gravity="center"
             android:orientation="horizontal" >
+<!--            <Button-->
+<!--                android:id="@+id/buttonEditProfilePic"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="12dp"-->
+<!--                android:text="Change\nProfile"-->
+<!--                android:onClick="editProfilePic"/>-->
+
     <Button
         android:id="@+id/buttonEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:text="Edit"
+        android:text="Update\nContact"
         android:onClick="editInformation"/>
 
             <Button

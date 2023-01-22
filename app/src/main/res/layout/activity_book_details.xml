@@ -31,14 +31,13 @@
         app:cardPreventCornerOverlap="true"
         app:cardUseCompatPadding="true" >
 
-    <ImageView
-        android:id="@+id/image_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="16dp"
-        android:scaleType="centerCrop"
-        android:adjustViewBounds="true"
-        android:src="@drawable/undraw_books_re_8gea" />
+        <ImageView
+            android:id="@+id/image_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/undraw_books_re_8gea" />
     </androidx.cardview.widget.CardView>
     <View
         android:layout_width="match_parent"

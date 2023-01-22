@@ -191,4 +191,8 @@ public class UserProfile extends AppCompatActivity {
         return dataBaseHelper.getAllBooks();
     }
 
+    public void editProfilePic(View view){
+
+    }
+
 }
